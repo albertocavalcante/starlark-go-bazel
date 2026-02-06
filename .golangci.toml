@@ -1,0 +1,29 @@
+[run]
+timeout = "5m"
+modules-download-mode = "readonly"
+build-tags = ["js", "wasm"]
+
+[linters]
+enable = [
+  "errcheck",
+  "gosimple",
+  "govet",
+  "ineffassign",
+  "staticcheck",
+  "unused",
+  "gofmt",
+  "goimports",
+  "misspell",
+  "unconvert",
+  "unparam",
+]
+
+[linters-settings.goimports]
+local-prefixes = "github.com/albertocavalcante/starlark-go-bazel"
+
+[issues]
+exclude-dirs = ["vendor"]
+
+[[issues.exclude-rules]]
+path = "wasm/"
+linters = ["typecheck"]
