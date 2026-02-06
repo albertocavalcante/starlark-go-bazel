@@ -13,18 +13,18 @@ import (
 //
 // Reference: bazel/src/main/java/com/google/devtools/build/lib/analysis/starlark/StarlarkRuleClassFunctions.java
 type RuleClass struct {
-	name           string                    // Assigned when exported
-	implementation starlark.Callable         // The rule implementation function
-	attrs          map[string]*AttrDescriptor // Attribute schemas (keyed by name)
-	test           bool                      // Whether this is a test rule
-	executable     bool                      // Whether this rule produces an executable
-	outputToGenfiles bool                    // Deprecated: output to genfiles instead of bin
-	fragments      []string                  // Required configuration fragments
-	toolchains     []starlark.Value          // Required toolchains
-	provides       []starlark.Value          // Providers this rule advertises
-	execCompatibleWith []string              // Execution platform constraints
-	doc            string                    // Documentation string
-	frozen         bool                      // Whether the rule has been frozen
+	name               string                     // Assigned when exported
+	implementation     starlark.Callable          // The rule implementation function
+	attrs              map[string]*AttrDescriptor // Attribute schemas (keyed by name)
+	test               bool                       // Whether this is a test rule
+	executable         bool                       // Whether this rule produces an executable
+	outputToGenfiles   bool                       // Deprecated: output to genfiles instead of bin
+	fragments          []string                   // Required configuration fragments
+	toolchains         []starlark.Value           // Required toolchains
+	provides           []starlark.Value           // Providers this rule advertises
+	execCompatibleWith []string                   // Execution platform constraints
+	doc                string                     // Documentation string
+	frozen             bool                       // Whether the rule has been frozen
 }
 
 var (
@@ -148,28 +148,28 @@ func (r *RuleClass) CallInternal(thread *starlark.Thread, args starlark.Tuple, k
 // Reference: bazel/src/main/java/com/google/devtools/build/lib/starlarkbuildapi/StarlarkRuleFunctionsApi.java
 func Rule(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var (
-		implementation   starlark.Callable
-		test             bool
-		attrs            *starlark.Dict
-		outputs          starlark.Value = starlark.None // Deprecated
-		executable       starlark.Value = starlark.None // Can be bool or unbound
-		outputToGenfiles bool
-		fragments        *starlark.List
-		hostFragments    *starlark.List // Deprecated
-		skylarkTestable  bool
-		toolchains       *starlark.List
-		doc              starlark.Value = starlark.None
-		provides         *starlark.List
+		implementation           starlark.Callable
+		test                     bool
+		attrs                    *starlark.Dict
+		outputs                  starlark.Value = starlark.None // Deprecated
+		executable               starlark.Value = starlark.None // Can be bool or unbound
+		outputToGenfiles         bool
+		fragments                *starlark.List
+		hostFragments            *starlark.List // Deprecated
+		skylarkTestable          bool
+		toolchains               *starlark.List
+		doc                      starlark.Value = starlark.None
+		provides                 *starlark.List
 		dependencyResolutionRule bool
-		execCompatibleWith *starlark.List
-		analysisTest     bool
-		buildSetting     starlark.Value = starlark.None
-		cfg              starlark.Value = starlark.None
-		execGroups       starlark.Value = starlark.None
-		initializer      starlark.Value = starlark.None
-		parent           starlark.Value = starlark.None
-		extendable       starlark.Value = starlark.None
-		subrules         *starlark.List
+		execCompatibleWith       *starlark.List
+		analysisTest             bool
+		buildSetting             starlark.Value = starlark.None
+		cfg                      starlark.Value = starlark.None
+		execGroups               starlark.Value = starlark.None
+		initializer              starlark.Value = starlark.None
+		parent                   starlark.Value = starlark.None
+		extendable               starlark.Value = starlark.None
+		subrules                 *starlark.List
 	)
 
 	if err := starlark.UnpackArgs("rule", args, kwargs,
@@ -310,16 +310,16 @@ func Rule(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs [
 	}
 
 	return &RuleClass{
-		implementation:   implementation,
-		attrs:            attrMap,
-		test:             test,
-		executable:       isExecutable,
-		outputToGenfiles: outputToGenfiles,
-		fragments:        fragmentList,
-		toolchains:       toolchainList,
-		provides:         providesList,
+		implementation:     implementation,
+		attrs:              attrMap,
+		test:               test,
+		executable:         isExecutable,
+		outputToGenfiles:   outputToGenfiles,
+		fragments:          fragmentList,
+		toolchains:         toolchainList,
+		provides:           providesList,
 		execCompatibleWith: execCompatList,
-		doc:              docStr,
+		doc:                docStr,
 	}, nil
 }
 
@@ -348,20 +348,20 @@ func isValidAttrName(name string) bool {
 
 // AttrDescriptor represents an attribute schema created by attr.* functions.
 type AttrDescriptor struct {
-	attrType      string                    // "label", "string", "int", "bool", etc.
-	defaultValue  starlark.Value            // Default value
-	doc           string                    // Documentation
-	mandatory     bool                      // Whether the attribute is required
-	allowEmpty    bool                      // For lists: allow empty list
-	allowFiles    starlark.Value            // For labels: file type filter
-	allowRules    []string                  // For labels: allowed rule kinds
-	providers     []starlark.Value          // For labels: required providers
-	allowSingleFile bool                    // For labels: must be single file
-	executable    bool                      // For labels: must be executable
-	cfg           starlark.Value            // Configuration transition
-	aspects       []starlark.Value          // Aspects to apply
-	values        []string                  // For strings: allowed values
-	frozen        bool
+	attrType        string           // "label", "string", "int", "bool", etc.
+	defaultValue    starlark.Value   // Default value
+	doc             string           // Documentation
+	mandatory       bool             // Whether the attribute is required
+	allowEmpty      bool             // For lists: allow empty list
+	allowFiles      starlark.Value   // For labels: file type filter
+	allowRules      []string         // For labels: allowed rule kinds
+	providers       []starlark.Value // For labels: required providers
+	allowSingleFile bool             // For labels: must be single file
+	executable      bool             // For labels: must be executable
+	cfg             starlark.Value   // Configuration transition
+	aspects         []starlark.Value // Aspects to apply
+	values          []string         // For strings: allowed values
+	frozen          bool
 }
 
 var (

@@ -102,9 +102,9 @@ func (t Type) DefaultValue() starlark.Value {
 // - list of strings (file extensions like [".cc", ".cpp"])
 // Reference: StarlarkAttrModule.java setAllowedFileTypes()
 type AllowFilesValue struct {
-	allowAll    bool     // True means any file allowed (allow_files=True)
-	allowNone   bool     // True means no files allowed (allow_files=False)
-	extensions  []string // List of allowed extensions (e.g., [".cc", ".cpp"])
+	allowAll   bool     // True means any file allowed (allow_files=True)
+	allowNone  bool     // True means no files allowed (allow_files=False)
+	extensions []string // List of allowed extensions (e.g., [".cc", ".cpp"])
 }
 
 // NewAllowFilesAll creates an AllowFilesValue that allows all files.

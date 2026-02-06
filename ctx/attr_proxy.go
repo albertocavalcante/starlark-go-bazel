@@ -373,8 +373,8 @@ type TargetProxy struct {
 }
 
 var (
-	_ starlark.Value    = (*TargetProxy)(nil)
-	_ starlark.HasAttrs = (*TargetProxy)(nil)
+	_ starlark.Value     = (*TargetProxy)(nil)
+	_ starlark.HasAttrs  = (*TargetProxy)(nil)
 	_ starlark.Indexable = (*TargetProxy)(nil)
 )
 

@@ -237,11 +237,11 @@ func (r *FileRoot) Path() string { return r.path }
 // Runfiles represents a runfiles object.
 // Source: StarlarkRuleContext.runfiles() and Runfiles.java
 type Runfiles struct {
-	files          []*File
+	files           []*File
 	transitiveFiles []*File
-	symlinks       map[string]*File
-	rootSymlinks   map[string]*File
-	frozen         bool
+	symlinks        map[string]*File
+	rootSymlinks    map[string]*File
+	frozen          bool
 }
 
 var (

@@ -19,9 +19,9 @@ import (
 //
 // Reference: bazel/src/main/java/com/google/devtools/build/lib/collect/nestedset/Depset.java
 type Depset struct {
-	order      string                    // Traversal order
-	direct     []starlark.Value          // Direct elements
-	transitive []*Depset                 // Transitive depsets
+	order      string           // Traversal order
+	direct     []starlark.Value // Direct elements
+	transitive []*Depset        // Transitive depsets
 	frozen     bool
 }
 

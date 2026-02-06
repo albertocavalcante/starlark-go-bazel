@@ -12,22 +12,22 @@ import (
 //
 // Reference: bazel/src/main/java/com/google/devtools/build/lib/packages/StarlarkDefinedAspect.java
 type AspectClass struct {
-	name                    string                    // Assigned when exported
-	implementation          starlark.Callable         // The aspect implementation function
-	attrAspects             []string                  // Attributes to propagate along
-	toolchainsAspects       []starlark.Value          // Toolchain types to propagate to
+	name                    string                     // Assigned when exported
+	implementation          starlark.Callable          // The aspect implementation function
+	attrAspects             []string                   // Attributes to propagate along
+	toolchainsAspects       []starlark.Value           // Toolchain types to propagate to
 	attrs                   map[string]*AttrDescriptor // Aspect's own attributes
-	requiredProviders       []starlark.Value          // Providers that targets must have
-	requiredAspectProviders []starlark.Value          // Providers that other aspects must have
-	provides                []starlark.Value          // Providers this aspect produces
-	requiredAspects         []starlark.Value          // Other aspects that must run first
-	propagationPredicate    starlark.Callable         // Function to filter propagation
-	fragments               []string                  // Required configuration fragments
-	toolchains              []starlark.Value          // Required toolchains
-	applyToGeneratingRules  bool                      // Whether to apply to generating rules
-	execCompatibleWith      []string                  // Execution platform constraints
-	execGroups              map[string]starlark.Value // Execution groups
-	doc                     string                    // Documentation string
+	requiredProviders       []starlark.Value           // Providers that targets must have
+	requiredAspectProviders []starlark.Value           // Providers that other aspects must have
+	provides                []starlark.Value           // Providers this aspect produces
+	requiredAspects         []starlark.Value           // Other aspects that must run first
+	propagationPredicate    starlark.Callable          // Function to filter propagation
+	fragments               []string                   // Required configuration fragments
+	toolchains              []starlark.Value           // Required toolchains
+	applyToGeneratingRules  bool                       // Whether to apply to generating rules
+	execCompatibleWith      []string                   // Execution platform constraints
+	execGroups              map[string]starlark.Value  // Execution groups
+	doc                     string                     // Documentation string
 	frozen                  bool
 }
 

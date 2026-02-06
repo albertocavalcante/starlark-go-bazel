@@ -351,9 +351,11 @@ type attrDescriptorValue struct {
 
 var _ starlark.Value = (*attrDescriptorValue)(nil)
 
-func (a *attrDescriptorValue) String() string        { return fmt.Sprintf("<attr.%s>", a.desc.Type) }
-func (a *attrDescriptorValue) Type() string          { return "Attribute" }
-func (a *attrDescriptorValue) Freeze()               {}
-func (a *attrDescriptorValue) Truth() starlark.Bool  { return true }
-func (a *attrDescriptorValue) Hash() (uint32, error) { return 0, fmt.Errorf("unhashable type: Attribute") }
+func (a *attrDescriptorValue) String() string       { return fmt.Sprintf("<attr.%s>", a.desc.Type) }
+func (a *attrDescriptorValue) Type() string         { return "Attribute" }
+func (a *attrDescriptorValue) Freeze()              {}
+func (a *attrDescriptorValue) Truth() starlark.Bool { return true }
+func (a *attrDescriptorValue) Hash() (uint32, error) {
+	return 0, fmt.Errorf("unhashable type: Attribute")
+}
 func (a *attrDescriptorValue) Descriptor() *types.AttrDescriptor { return a.desc }

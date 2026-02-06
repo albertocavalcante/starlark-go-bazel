@@ -257,11 +257,11 @@ func DefaultInfoBuiltin(thread *starlark.Thread, b *starlark.Builtin, args starl
 	}
 
 	var (
-		filesObj          starlark.Value = starlark.None
-		runfilesObj       starlark.Value = starlark.None
-		dataRunfilesObj   starlark.Value = starlark.None
+		filesObj           starlark.Value = starlark.None
+		runfilesObj        starlark.Value = starlark.None
+		dataRunfilesObj    starlark.Value = starlark.None
 		defaultRunfilesObj starlark.Value = starlark.None
-		executableObj     starlark.Value = starlark.None
+		executableObj      starlark.Value = starlark.None
 	)
 
 	for _, kv := range kwargs {

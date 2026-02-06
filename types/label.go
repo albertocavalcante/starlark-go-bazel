@@ -11,10 +11,10 @@ import (
 
 // Label represents a Bazel label like //pkg:target or @repo//pkg:target.
 type Label struct {
-	repo    string // Repository name (empty for main repo)
-	pkg     string // Package path
-	name    string // Target name
-	frozen  bool
+	repo   string // Repository name (empty for main repo)
+	pkg    string // Package path
+	name   string // Target name
+	frozen bool
 }
 
 var (

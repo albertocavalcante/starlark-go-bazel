@@ -18,10 +18,10 @@ type RuleInfo struct {
 
 // AttrInfo contains introspection data about an attribute.
 type AttrInfo struct {
-	Type      string      `json:"type"`
-	Mandatory bool        `json:"mandatory"`
-	Default   any         `json:"default,omitempty"`
-	Doc       string      `json:"doc,omitempty"`
+	Type      string `json:"type"`
+	Mandatory bool   `json:"mandatory"`
+	Default   any    `json:"default,omitempty"`
+	Doc       string `json:"doc,omitempty"`
 }
 
 // ProviderInfo contains introspection data about a provider.
@@ -122,8 +122,8 @@ func starlarkToGo(v starlark.Value) any {
 
 // TargetInfo contains introspection data about a target.
 type TargetInfo struct {
-	Name  string                 `json:"name"`
-	Rule  string                 `json:"rule"`
+	Name  string         `json:"name"`
+	Rule  string         `json:"rule"`
 	Attrs map[string]any `json:"attrs"`
 }
 
