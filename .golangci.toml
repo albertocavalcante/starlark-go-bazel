@@ -1,29 +1,128 @@
+# golangci-lint v2 configuration
+# https://golangci-lint.run/docs/configuration/
+version = "2"
+
+# Run options
 [run]
 timeout = "5m"
+tests = true
 modules-download-mode = "readonly"
 build-tags = ["js", "wasm"]
 
+# Linters
 [linters]
+default = "standard"
 enable = [
+  # Code quality
   "errcheck",
-  "gosimple",
   "govet",
-  "ineffassign",
   "staticcheck",
   "unused",
-  "gofmt",
-  "goimports",
+  "ineffassign",
+
+  # Style & consistency
+  "goconst",
+  "gocritic",
   "misspell",
   "unconvert",
   "unparam",
+  "whitespace",
+
+  # Bug prevention
+  "bodyclose",
+  "noctx",
+
+  # Modern Go
+  "copyloopvar",
+  "intrange",
+
+  # Security
+  "gosec",
+]
+disable = [
+  "wrapcheck",
+  "exhaustruct",
+  "varnamelen",
 ]
 
-[linters-settings.goimports]
-local-prefixes = "github.com/albertocavalcante/starlark-go-bazel"
+# Linter-specific settings
+[linters.settings]
 
-[issues]
-exclude-dirs = ["vendor"]
+[linters.settings.errcheck]
+check-type-assertions = false
+check-blank = false
 
-[[issues.exclude-rules]]
+[linters.settings.goconst]
+min-len = 3
+min-occurrences = 3
+
+[linters.settings.gocritic]
+enabled-tags = [
+  "diagnostic",
+  "performance",
+  "style",
+]
+disabled-checks = [
+  "hugeParam",
+  "ifElseChain",
+  "appendAssign",
+  "rangeValCopy",
+]
+
+[linters.settings.govet]
+enable-all = true
+disable = ["fieldalignment"]
+
+[linters.settings.misspell]
+locale = "US"
+
+[linters.settings.staticcheck]
+checks = ["all", "-SA1019"]
+
+[linters.settings.gosec]
+excludes = [
+  "G104",
+]
+
+# Exclusions
+[linters.exclusions]
+generated = "lax"
+
+# Test files - relaxed linting
+[[linters.exclusions.rules]]
+path = "_test\\.go"
+linters = [
+  "errcheck",
+  "gocritic",
+  "gosec",
+  "govet",
+  "misspell",
+  "goconst",
+  "unparam",
+  "intrange",
+]
+
+# WASM files - relaxed linting
+[[linters.exclusions.rules]]
 path = "wasm/"
 linters = ["typecheck"]
+
+# Formatters
+[formatters]
+enable = [
+  "gofmt",
+  "goimports",
+]
+
+[formatters.settings.goimports]
+local-prefixes = ["github.com/albertocavalcante/starlark-go-bazel"]
+
+# Output format
+[output]
+sort-order = ["linter", "file"]
+show-stats = true
+
+# Issues
+[issues]
+max-issues-per-linter = 50
+max-same-issues = 3
