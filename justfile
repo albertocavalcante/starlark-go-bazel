@@ -14,19 +14,19 @@ build-wasm:
 
 # Run all tests
 test:
-    go test ./...
+    go tool -modfile=tools.go.mod gotestsum --format pkgname-and-test-fails -- ./...
 
 # Run tests with verbose output
 test-v:
-    go test -v ./...
+    go tool -modfile=tools.go.mod gotestsum --format standard-verbose -- ./...
 
 # Run tests with race detector
 test-race:
-    go test -race ./...
+    go tool -modfile=tools.go.mod gotestsum --format pkgname-and-test-fails -- -race ./...
 
 # Run tests with coverage
 test-cover:
-    go test -coverprofile=coverage.out ./...
+    go tool -modfile=tools.go.mod gotestsum --format pkgname-and-test-fails -- -coverprofile=coverage.out ./...
     go tool cover -html=coverage.out -o coverage.html
     @echo "Coverage report: coverage.html"
 
@@ -56,9 +56,10 @@ fmt-check:
         exit 1
     fi
 
-# Tidy go.mod
+# Tidy all go.mod files
 tidy:
     go mod tidy
+    go mod tidy -modfile=tools.go.mod
 
 # Verify dependencies
 verify:
@@ -67,7 +68,7 @@ verify:
 # Clean build artifacts
 clean:
     go clean -cache
-    rm -f main.wasm coverage.out coverage.html
+    rm -f main.wasm coverage.out coverage.html test-output.json
 
 # Run all checks (CI)
 ci: build test lint vet fmt-check

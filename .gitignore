@@ -6,6 +6,9 @@ main.wasm
 coverage.out
 coverage.html
 
+# Test output
+test-output.json
+
 # IDE
 .idea/
 .vscode/
