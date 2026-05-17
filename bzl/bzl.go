@@ -30,6 +30,7 @@ func New(opts Options) *Interpreter {
 		opts.FileSystem,
 		opts.WorkspaceRoot,
 		loader.WithRepoMapping(opts.ExternalRepos),
+		loader.WithLenientLoad(opts.LenientLoad),
 	)
 
 	evalOpts := eval.Options{

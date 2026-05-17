@@ -212,6 +212,11 @@ type BzlFileLoader struct {
 	// This matches Bazel's approach of caching BzlLoadValues.
 	mu    sync.Mutex
 	cache map[string]*loadEntry
+
+	// lenient turns unresolvable loads (unknown repo, missing file)
+	// into a soft no-op: the call returns an empty StringDict and
+	// nil error. See WithLenientLoad for the contract.
+	lenient bool
 }
 
 // loadEntry represents a cached module or a module being loaded.
@@ -236,6 +241,24 @@ func WithPredeclared(predeclared starlark.StringDict) BzlFileLoaderOption {
 func WithRepoMapping(mapping map[string]string) BzlFileLoaderOption {
 	return func(l *BzlFileLoader) {
 		l.repoMapping = mapping
+	}
+}
+
+// WithLenientLoad turns load() errors for unknown external repos and
+// missing files into a soft no-op: the call returns an empty
+// StringDict and a nil error, so evaluation of the importing file
+// continues. Symbols that the missing load would have provided are
+// simply undefined in the importer's scope, and only fail if and when
+// the importer's code actually references them.
+//
+// This is the "introspect-only" mode used by callers that want to
+// extract structural information (rule attrs, provider fields, etc.)
+// from .bzl files without materializing their entire external
+// dependency closure. Faithful execution mode (the default) still
+// errors on unresolvable loads.
+func WithLenientLoad(enabled bool) BzlFileLoaderOption {
+	return func(l *BzlFileLoader) {
+		l.lenient = enabled
 	}
 }
 
@@ -271,6 +294,12 @@ func (l *BzlFileLoader) Load(thread *starlark.Thread, module string) (starlark.S
 	// Resolve the module string to a canonical label and filesystem path.
 	label, path, err := l.resolveModule(thread, module)
 	if err != nil {
+		// Lenient mode: treat unresolvable external repos as
+		// empty-import-set. Importing file keeps evaluating; any
+		// symbol the load was supposed to provide is just undefined.
+		if l.lenient {
+			return starlark.StringDict{}, nil
+		}
 		return nil, fmt.Errorf("load(%q): %w", module, err)
 	}
 
@@ -307,6 +336,13 @@ func (l *BzlFileLoader) Load(thread *starlark.Thread, module string) (starlark.S
 	}
 
 	if entry.err != nil {
+		// Lenient mode also swallows downstream load errors (missing
+		// files, parse errors in transitively-loaded files). We cache
+		// the success-with-empty-globals path explicitly so a later
+		// load of the same label doesn't re-attempt the failing read.
+		if l.lenient {
+			return starlark.StringDict{}, nil
+		}
 		return nil, entry.err
 	}
 	return entry.globals, nil
