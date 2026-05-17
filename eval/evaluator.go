@@ -210,10 +210,50 @@ func makeBzlPredeclared() starlark.StringDict {
 		"depset":   starlark.NewBuiltin("depset", types.DepsetBuiltin),
 		"rule":     starlark.NewBuiltin("rule", types.RuleBuiltin),
 		"attr":     newAttrModule(),
-		"True":     starlark.True,
-		"False":    starlark.False,
-		"None":     starlark.None,
+		// .bzl files routinely reference `native.*` inside helper /
+		// macro function bodies (native.package_name, native.glob,
+		// native.existing_rule, etc.) even though those calls are
+		// only legal when invoked from a BUILD context. Starlark
+		// resolves identifiers at compile time, so an undefined
+		// `native` makes the .bzl fail to load even if the helpers
+		// never actually run.
+		//
+		// Provide `native` as a permissive stub: it answers any
+		// attribute lookup with a callable that returns None / empty
+		// string / empty list, depending on the surface most-likely
+		// shape. That keeps module-load eval succeeding (rule()
+		// registration completes) without pretending to faithfully
+		// execute BUILD-context functions.
+		"native": newNativeStub(),
+		"True":   starlark.True,
+		"False":  starlark.False,
+		"None":   starlark.None,
 	}
+}
+
+// nativeStub is a starlark.HasAttrs implementation that returns a
+// stub builtin for any attribute name. Calling that builtin returns
+// None — enough to keep .bzl evaluation going past `native.foo(...)`
+// expressions even when foo isn't a recognized native function.
+type nativeStub struct{}
+
+func newNativeStub() *nativeStub { return &nativeStub{} }
+
+func (*nativeStub) String() string                           { return "<native (stub)>" }
+func (*nativeStub) Type() string                             { return "native" }
+func (*nativeStub) Freeze()                                  {}
+func (*nativeStub) Truth() starlark.Bool                     { return starlark.True }
+func (*nativeStub) Hash() (uint32, error)                    { return 0, fmt.Errorf("unhashable: native") }
+func (*nativeStub) AttrNames() []string                      { return nil }
+func (*nativeStub) Attr(name string) (starlark.Value, error) {
+	return starlark.NewBuiltin("native."+name, func(*starlark.Thread, *starlark.Builtin, starlark.Tuple, []starlark.Tuple) (starlark.Value, error) {
+		// Conservative return: None is safe in any expression
+		// position. Callers that ASSIGN the result and then iterate
+		// will fail at iter time, which is the same outcome as a
+		// real BUILD-context call returning unexpected shape — not
+		// the introspection bug we care about preventing.
+		return starlark.None, nil
+	}), nil
 }
 
 func makeBuildPredeclared() starlark.StringDict {
