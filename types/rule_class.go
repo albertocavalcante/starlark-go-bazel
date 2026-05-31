@@ -706,17 +706,29 @@ func RuleBuiltin(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tup
 		return nil, err
 	}
 
-	// Convert attrs dict to AttrDescriptor map
+	// Convert attrs dict to AttrDescriptor map. Values are expected
+	// to implement AttrDescriptorHolder — concretely the
+	// *attrDescriptorValue wrappers returned by eval's attr.* module.
+	// We pull the canonical descriptor from the holder rather than
+	// asserting a concrete type so producers and consumers can move
+	// independently.
 	attrMap := make(map[string]*AttrDescriptor)
 	if attrs != nil {
 		for _, item := range attrs.Items() {
-			name := string(item[0].(starlark.String))
-			// For now, we create a basic descriptor
-			// The full attr module will provide proper AttrDescriptor values
-			attrMap[name] = &AttrDescriptor{
-				Name: name,
-				Type: AttrTypeString, // Default, will be overridden by attr module
+			key, ok := item[0].(starlark.String)
+			if !ok {
+				return nil, fmt.Errorf("rule: attrs keys must be strings, got %s", item[0].Type())
 			}
+			name := string(key)
+			holder, ok := item[1].(AttrDescriptorHolder)
+			if !ok {
+				return nil, fmt.Errorf("rule: attrs values must be attr objects, got %s for %q", item[1].Type(), name)
+			}
+			desc := holder.Descriptor()
+			// Stamp the name from the dict key; attr.* constructors
+			// don't see the binding so .Name arrives empty.
+			desc.Name = name
+			attrMap[name] = desc
 		}
 	}
 

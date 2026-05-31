@@ -275,6 +275,7 @@ func makeBzlPredeclared() starlark.StringDict {
 		"struct":           starlark.NewBuiltin("struct", starlarkstruct.Make),
 		"depset":           starlark.NewBuiltin("depset", types.DepsetBuiltin),
 		"rule":             starlark.NewBuiltin("rule", types.RuleBuiltin),
+		"aspect":           starlark.NewBuiltin("aspect", builtins.Aspect),
 		"repository_rule":  starlark.NewBuiltin("repository_rule", builtins.RepositoryRule),
 		"module_extension": starlark.NewBuiltin("module_extension", builtins.ModuleExtension),
 		"tag_class":        starlark.NewBuiltin("tag_class", builtins.TagClass),
