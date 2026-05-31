@@ -3,8 +3,9 @@ package native
 import (
 	"fmt"
 
-	"github.com/albertocavalcante/starlark-go-bazel/types"
 	"go.starlark.net/starlark"
+
+	"github.com/albertocavalcante/starlark-go-bazel/types"
 )
 
 // packageName implements native.package_name().

@@ -5,8 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/albertocavalcante/starlark-go-bazel/types"
 	"go.starlark.net/starlark"
+
+	"github.com/albertocavalcante/starlark-go-bazel/types"
 )
 
 func TestPackageName(t *testing.T) {

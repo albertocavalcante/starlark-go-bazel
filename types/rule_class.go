@@ -83,9 +83,13 @@ type RuleClass struct {
 	// Reference: StarlarkRuleFunctionsApi.java - "fragments" parameter, lines 565-573
 	fragments []string
 
-	// Host configuration fragments (deprecated).
+	// Host configuration fragments (deprecated in Bazel; kept for
+	// shape parity with the upstream surface).
 	// Reference: StarlarkRuleFunctionsApi.java - "host_fragments" parameter, lines 574-582
-	hostFragments []string
+	//
+	// SCAFFOLD: captured but not consumed; Bazel itself deprecated
+	// host_fragments, so wire-up may never land.
+	hostFragments []string //nolint:unused // SCAFFOLD: deprecated upstream; consumed only if a M5+ consumer asks.
 
 	// Toolchains required by this rule.
 	// Reference: StarlarkRuleFunctionsApi.java - "toolchains" parameter, lines 596-605
@@ -276,9 +280,9 @@ func (rc *RuleClass) addImplicitAttributes() {
 
 	// name attribute - mandatory for all rules
 	// Reference: RuleClass.java lines 119-124
-	if _, exists := rc.attrs["name"]; !exists {
-		rc.attrs["name"] = &AttrDescriptor{
-			Name:            "name",
+	if _, exists := rc.attrs[attrName]; !exists {
+		rc.attrs[attrName] = &AttrDescriptor{
+			Name:            attrName,
 			Type:            AttrTypeString,
 			Mandatory:       true,
 			NonConfigurable: true,
@@ -635,7 +639,7 @@ func (rc *RuleClass) validateAttrValue(attr *AttrDescriptor, value starlark.Valu
 // Attr returns an attribute of the rule class.
 func (rc *RuleClass) Attr(name string) (starlark.Value, error) {
 	switch name {
-	case "kind":
+	case attrKind:
 		return starlark.String(rc.name), nil
 	default:
 		return nil, starlark.NoSuchAttrError(fmt.Sprintf("rule has no attribute %q", name))
@@ -717,11 +721,12 @@ func RuleBuiltin(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tup
 	}
 
 	// Build options
-	var opts []RuleClassOption
-	opts = append(opts, WithExecutable(executable))
-	opts = append(opts, WithTest(test))
-	opts = append(opts, WithDoc(doc))
-	opts = append(opts, WithAnalysisTest(analysisTest))
+	opts := []RuleClassOption{
+		WithExecutable(executable),
+		WithTest(test),
+		WithDoc(doc),
+		WithAnalysisTest(analysisTest),
+	}
 
 	if cfg != nil && cfg != starlark.None {
 		opts = append(opts, WithCfg(cfg))
@@ -834,21 +839,16 @@ func (rc *RuleClass) GetAttr(name string) (*AttrDescriptor, bool) {
 	return attr, ok
 }
 
-// String representation helpers
-func attrTypeToString(at AttrType) string {
-	return string(at)
-}
-
 // DebugString returns a detailed string representation for debugging.
 func (rc *RuleClass) DebugString() string {
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("RuleClass(%s):\n", rc.name))
-	sb.WriteString(fmt.Sprintf("  executable: %v\n", rc.executable))
-	sb.WriteString(fmt.Sprintf("  test: %v\n", rc.test))
+	fmt.Fprintf(&sb, "RuleClass(%s):\n", rc.name)
+	fmt.Fprintf(&sb, "  executable: %v\n", rc.executable)
+	fmt.Fprintf(&sb, "  test: %v\n", rc.test)
 	sb.WriteString("  attrs:\n")
 	for _, name := range rc.AttrDescriptorList() {
 		attr := rc.attrs[name]
-		sb.WriteString(fmt.Sprintf("    %s: %s (mandatory=%v)\n", name, attr.Type, attr.Mandatory))
+		fmt.Fprintf(&sb, "    %s: %s (mandatory=%v)\n", name, attr.Type, attr.Mandatory)
 	}
 	return sb.String()
 }

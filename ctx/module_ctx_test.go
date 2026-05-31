@@ -3,9 +3,10 @@ package ctx_test
 import (
 	"testing"
 
+	"go.starlark.net/starlark"
+
 	"github.com/albertocavalcante/starlark-go-bazel/ctx"
 	"github.com/albertocavalcante/starlark-go-bazel/version"
-	"go.starlark.net/starlark"
 )
 
 // module_ctx.modules surfaces ModuleSpec entries as bazel_module

@@ -31,8 +31,8 @@ func LoaderFor(symbolsByModule map[string][]string, tryReal func(module string) 
 		}
 		out := starlark.StringDict{}
 		if tryReal != nil {
-			if real, ok := tryReal(module); ok {
-				maps.Copy(out, real)
+			if resolved, ok := tryReal(module); ok {
+				maps.Copy(out, resolved)
 			}
 		}
 		for _, sym := range symbolsByModule[module] {

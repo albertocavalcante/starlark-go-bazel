@@ -3,10 +3,11 @@ package ctx
 import (
 	"fmt"
 
-	"github.com/albertocavalcante/starlark-go-bazel/taint"
-	"github.com/albertocavalcante/starlark-go-bazel/version"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
+
+	"github.com/albertocavalcante/starlark-go-bazel/taint"
+	"github.com/albertocavalcante/starlark-go-bazel/version"
 )
 
 // ModuleCtx is the synthetic module_ctx passed to a module_extension's
@@ -30,11 +31,11 @@ type ModuleCtx struct {
 // ModuleSpec describes one bazel_module visible to a module_extension's
 // impl. Mirrors MODULE.bazel's use_extension(...).<tag>(...) callsites.
 type ModuleSpec struct {
-	Name           string
-	Version        string
-	IsRoot         bool
-	IsDevDep       bool
-	Tags           map[string][]TagInstance
+	Name     string
+	Version  string
+	IsRoot   bool
+	IsDevDep bool
+	Tags     map[string][]TagInstance
 }
 
 // TagInstance is one tag-class instantiation in MODULE.bazel.
@@ -107,7 +108,7 @@ func (m *ModuleCtx) Attr(name string) (starlark.Value, error) {
 		return starlark.NewBuiltin("module_ctx.execute", m.executeMethod), nil
 	case "read":
 		return starlark.NewBuiltin("module_ctx.read", m.readMethod), nil
-	case "path":
+	case attrPath:
 		return starlark.NewBuiltin("module_ctx.path", passThroughFirst), nil
 	case "getenv":
 		if m.ver >= version.V8 {

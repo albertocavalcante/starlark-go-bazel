@@ -3,9 +3,10 @@ package bzl
 import (
 	"testing"
 
+	"go.starlark.net/starlark"
+
 	"github.com/albertocavalcante/starlark-go-bazel/taint"
 	"github.com/albertocavalcante/starlark-go-bazel/version"
-	"go.starlark.net/starlark"
 )
 
 // Zero-value Options preserves prior behavior — existing callers

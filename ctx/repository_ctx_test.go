@@ -4,10 +4,11 @@ import (
 	"strings"
 	"testing"
 
+	"go.starlark.net/starlark"
+
 	"github.com/albertocavalcante/starlark-go-bazel/ctx"
 	"github.com/albertocavalcante/starlark-go-bazel/taint"
 	"github.com/albertocavalcante/starlark-go-bazel/version"
-	"go.starlark.net/starlark"
 )
 
 // callImplWithSrc evaluates src (defining `impl` taking the ctx arg)

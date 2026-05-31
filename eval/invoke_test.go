@@ -5,12 +5,13 @@ import (
 	"sort"
 	"testing"
 
+	"go.starlark.net/starlark"
+
 	"github.com/albertocavalcante/starlark-go-bazel/bzl"
 	bazelctx "github.com/albertocavalcante/starlark-go-bazel/ctx"
 	"github.com/albertocavalcante/starlark-go-bazel/eval"
 	"github.com/albertocavalcante/starlark-go-bazel/taint"
 	"github.com/albertocavalcante/starlark-go-bazel/types"
-	"go.starlark.net/starlark"
 )
 
 // captureRule parses src, evaluates it, and returns the named
@@ -391,12 +392,10 @@ my_repo = repository_rule(implementation = _impl)
 		for i, u := range inv.URLs {
 			curr[i] = u.Platform + ":" + u.URL
 		}
-		if prev != nil {
-			for i := range prev {
-				if i >= len(curr) || prev[i] != curr[i] {
-					t.Errorf("trial %d: order changed: prev=%v curr=%v", trial, prev, curr)
-					return
-				}
+		for i := range prev {
+			if i >= len(curr) || prev[i] != curr[i] {
+				t.Errorf("trial %d: order changed: prev=%v curr=%v", trial, prev, curr)
+				return
 			}
 		}
 		prev = curr

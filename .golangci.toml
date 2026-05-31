@@ -53,7 +53,13 @@ check-blank = false
 
 [linters.settings.goconst]
 min-len = 3
-min-occurrences = 3
+# 5 instead of 3: at 3, Bazel API attribute names ("name", "files",
+# "executable", "attr") get flagged everywhere they appear in switch
+# statements that mirror the StarlarkRuleContextApi.java surface.
+# Those aren't magic strings — they're the public Bazel grammar.
+# Threshold of 5 still catches real duplication of project-specific
+# strings (the consts.go families) without the API-vocabulary noise.
+min-occurrences = 5
 
 [linters.settings.gocritic]
 enabled-tags = [

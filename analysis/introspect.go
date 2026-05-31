@@ -2,8 +2,9 @@
 package analysis
 
 import (
-	"github.com/albertocavalcante/starlark-go-bazel/types"
 	"go.starlark.net/starlark"
+
+	"github.com/albertocavalcante/starlark-go-bazel/types"
 )
 
 // RuleInfo contains introspection data about a rule.

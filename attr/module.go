@@ -51,8 +51,8 @@ func attrString(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tupl
 	var (
 		defaultVal starlark.Value = starlark.String("")
 		doc        starlark.Value = starlark.None
-		mandatory  bool           = false
-		values     *starlark.List = starlark.NewList(nil)
+		mandatory                 = false
+		values                    = starlark.NewList(nil)
 	)
 
 	if err := starlark.UnpackArgs("attr.string", args, kwargs,
@@ -97,10 +97,10 @@ func attrString(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tupl
 //   - values: [] (allowed integer values)
 func attrInt(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var (
-		defaultVal starlark.Int   = starlark.MakeInt(0)
+		defaultVal                = starlark.MakeInt(0)
 		doc        starlark.Value = starlark.None
-		mandatory  bool           = false
-		values     *starlark.List = starlark.NewList(nil)
+		mandatory                 = false
+		values                    = starlark.NewList(nil)
 	)
 
 	if err := starlark.UnpackArgs("attr.int", args, kwargs,
@@ -142,9 +142,9 @@ func attrInt(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 //   - mandatory: False
 func attrBool(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var (
-		defaultVal bool           = false
+		defaultVal                = false
 		doc        starlark.Value = starlark.None
-		mandatory  bool           = false
+		mandatory                 = false
 	)
 
 	if err := starlark.UnpackArgs("attr.bool", args, kwargs,
@@ -186,14 +186,14 @@ func attrLabel(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tuple
 	var (
 		defaultVal      starlark.Value = starlark.None
 		doc             starlark.Value = starlark.None
-		executable      bool           = false
+		executable                     = false
 		allowFiles      starlark.Value = starlark.None
 		allowSingleFile starlark.Value = starlark.None
-		mandatory       bool           = false
-		providers       *starlark.List = starlark.NewList(nil)
+		mandatory                      = false
+		providers                      = starlark.NewList(nil)
 		allowRules      starlark.Value = starlark.None
 		cfg             starlark.Value = starlark.None
-		aspects         *starlark.List = starlark.NewList(nil)
+		aspects                        = starlark.NewList(nil)
 	)
 
 	if err := starlark.UnpackArgs("attr.label", args, kwargs,
@@ -321,10 +321,10 @@ func attrLabelList(thread *starlark.Thread, b *starlark.Builtin, args starlark.T
 		doc        starlark.Value = starlark.None
 		allowFiles starlark.Value = starlark.None
 		allowRules starlark.Value = starlark.None
-		providers  *starlark.List = starlark.NewList(nil)
-		mandatory  bool           = false
+		providers                 = starlark.NewList(nil)
+		mandatory                 = false
 		cfg        starlark.Value = starlark.None
-		aspects    *starlark.List = starlark.NewList(nil)
+		aspects                   = starlark.NewList(nil)
 	)
 
 	if err := starlark.UnpackArgs("attr.label_list", args, kwargs,
@@ -417,7 +417,7 @@ func attrLabelList(thread *starlark.Thread, b *starlark.Builtin, args starlark.T
 //   - doc: None
 func attrStringList(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var (
-		mandatory  bool           = false
+		mandatory                 = false
 		allowEmpty starlark.Value = starlark.True
 		defaultVal starlark.Value = starlark.NewList(nil)
 		doc        starlark.Value = starlark.None
@@ -459,7 +459,7 @@ func attrStringList(thread *starlark.Thread, b *starlark.Builtin, args starlark.
 //   - doc: None
 func attrIntList(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var (
-		mandatory  bool           = false
+		mandatory                 = false
 		allowEmpty starlark.Value = starlark.True
 		defaultVal starlark.Value = starlark.NewList(nil)
 		doc        starlark.Value = starlark.None
@@ -504,7 +504,7 @@ func attrStringDict(thread *starlark.Thread, b *starlark.Builtin, args starlark.
 		allowEmpty starlark.Value = starlark.True
 		defaultVal starlark.Value = starlark.NewDict(0)
 		doc        starlark.Value = starlark.None
-		mandatory  bool           = false
+		mandatory                 = false
 	)
 
 	if err := starlark.UnpackArgs("attr.string_dict", args, kwargs,
@@ -546,7 +546,7 @@ func attrStringListDict(thread *starlark.Thread, b *starlark.Builtin, args starl
 		allowEmpty starlark.Value = starlark.True
 		defaultVal starlark.Value = starlark.NewDict(0)
 		doc        starlark.Value = starlark.None
-		mandatory  bool           = false
+		mandatory                 = false
 	)
 
 	if err := starlark.UnpackArgs("attr.string_list_dict", args, kwargs,
@@ -595,10 +595,10 @@ func attrLabelKeyedStringDict(thread *starlark.Thread, b *starlark.Builtin, args
 		doc        starlark.Value = starlark.None
 		allowFiles starlark.Value = starlark.None
 		allowRules starlark.Value = starlark.None
-		providers  *starlark.List = starlark.NewList(nil)
-		mandatory  bool           = false
+		providers                 = starlark.NewList(nil)
+		mandatory                 = false
 		cfg        starlark.Value = starlark.None
-		aspects    *starlark.List = starlark.NewList(nil)
+		aspects                   = starlark.NewList(nil)
 	)
 
 	if err := starlark.UnpackArgs("attr.label_keyed_string_dict", args, kwargs,
@@ -691,7 +691,7 @@ func attrLabelKeyedStringDict(thread *starlark.Thread, b *starlark.Builtin, args
 func attrOutput(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var (
 		doc       starlark.Value = starlark.None
-		mandatory bool           = false
+		mandatory                = false
 	)
 
 	if err := starlark.UnpackArgs("attr.output", args, kwargs,
@@ -723,7 +723,7 @@ func attrOutputList(thread *starlark.Thread, b *starlark.Builtin, args starlark.
 	var (
 		allowEmpty starlark.Value = starlark.True
 		doc        starlark.Value = starlark.None
-		mandatory  bool           = false
+		mandatory                 = false
 	)
 
 	if err := starlark.UnpackArgs("attr.output_list", args, kwargs,
@@ -776,7 +776,7 @@ func parseAllowFiles(v starlark.Value) (*AllowFilesValue, error) {
 		return NewAllowFilesExtensions(extensions), nil
 	case starlark.Tuple:
 		extensions := make([]string, len(x))
-		for i := range len(x) {
+		for i := range x {
 			s, ok := x[i].(starlark.String)
 			if !ok {
 				return nil, fmt.Errorf("allow_files element must be a string, got %s", x[i].Type())

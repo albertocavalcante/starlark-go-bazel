@@ -2,10 +2,11 @@
 package bzl
 
 import (
+	"go.starlark.net/starlark"
+
 	"github.com/albertocavalcante/starlark-go-bazel/loader"
 	"github.com/albertocavalcante/starlark-go-bazel/taint"
 	"github.com/albertocavalcante/starlark-go-bazel/version"
-	"go.starlark.net/starlark"
 )
 
 // LoadFunc is the canonical signature for a thread.Load handler.

@@ -3,9 +3,10 @@ package types_test
 import (
 	"testing"
 
+	"go.starlark.net/starlark"
+
 	"github.com/albertocavalcante/starlark-go-bazel/taint"
 	"github.com/albertocavalcante/starlark-go-bazel/types"
-	"go.starlark.net/starlark"
 )
 
 func TestRepositoryRuleFromInstantiation_HappyPath(t *testing.T) {

@@ -135,7 +135,7 @@ func (v *ExistingRuleView) Get(key starlark.Value) (val starlark.Value, found bo
 	switch keyStr {
 	case "name":
 		return starlark.String(v.name), true, nil
-	case "kind":
+	case attrKind:
 		if kind, ok := v.attrs["kind"]; ok {
 			return kind, true, nil
 		}
@@ -160,7 +160,7 @@ func (v *ExistingRuleView) Iterate() starlark.Iterator {
 // keys returns all the keys in iteration order.
 func (v *ExistingRuleView) keys() []string {
 	// "name" and "kind" come first, then attribute names sorted
-	keys := []string{"name", "kind"}
+	keys := []string{"name", attrKind}
 	attrKeys := make([]string, 0, len(v.attrs))
 	for k := range v.attrs {
 		if isPotentiallyExportableAttribute(k) && k != "name" && k != "kind" {
@@ -265,6 +265,10 @@ type existingRuleIterator struct {
 	index int
 }
 
+// Next implements starlark.Iterator; the pointer parameter is part
+// of the interface contract and cannot be changed.
+//
+//nolint:gocritic // ptrToRefParam: interface-required signature.
 func (it *existingRuleIterator) Next(p *starlark.Value) bool {
 	if it.index >= len(it.keys) {
 		return false
@@ -444,6 +448,10 @@ type existingRulesIterator struct {
 	index int
 }
 
+// Next implements starlark.Iterator; the pointer parameter is part
+// of the interface contract and cannot be changed.
+//
+//nolint:gocritic // ptrToRefParam: interface-required signature.
 func (it *existingRulesIterator) Next(p *starlark.Value) bool {
 	if it.index >= len(it.names) {
 		return false
@@ -460,7 +468,7 @@ func (it *existingRulesIterator) Done() {}
 //
 // Reference: bazel/src/main/java/com/google/devtools/build/lib/packages/StarlarkNativeModule.java#isPotentiallyExportableAttribute
 func isPotentiallyExportableAttribute(name string) bool {
-	if len(name) == 0 {
+	if name == "" {
 		return false
 	}
 	// Do not expose hidden or implicit attributes (those not starting with a letter)

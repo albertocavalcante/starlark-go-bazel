@@ -185,19 +185,18 @@ func Aspect(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs
 			// Aspect attributes have restrictions:
 			// - Implicit attributes (starting with _) must be label type and have defaults
 			// - Explicit attributes must be string/int/bool type
+			// Implicit attribute (name starts with `_`): must be label
+			// type with a default. Explicit attribute: must be string,
+			// int, or bool.
 			if name[0] == '_' {
-				// Implicit attribute: must be label type with default
 				if desc.attrType != "label" && desc.attrType != "label_list" {
 					return nil, fmt.Errorf("aspect: implicit attribute %q must have type label or label_list", name)
 				}
 				if desc.defaultValue == nil || desc.defaultValue == starlark.None {
 					return nil, fmt.Errorf("aspect: implicit attribute %q has no default value", name)
 				}
-			} else {
-				// Explicit attribute: must be string, int, or bool
-				if desc.attrType != "string" && desc.attrType != "int" && desc.attrType != "bool" {
-					return nil, fmt.Errorf("aspect: explicit attribute %q must have type bool, int, or string", name)
-				}
+			} else if desc.attrType != "string" && desc.attrType != "int" && desc.attrType != "bool" {
+				return nil, fmt.Errorf("aspect: explicit attribute %q must have type bool, int, or string", name)
 			}
 
 			attrMap[name] = desc

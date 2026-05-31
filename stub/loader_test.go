@@ -3,8 +3,9 @@ package stub_test
 import (
 	"testing"
 
-	"github.com/albertocavalcante/starlark-go-bazel/stub"
 	"go.starlark.net/syntax"
+
+	"github.com/albertocavalcante/starlark-go-bazel/stub"
 )
 
 // parseLoadStmts is the test scaffold: build a syntax.File with the

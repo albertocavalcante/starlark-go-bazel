@@ -10,8 +10,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/albertocavalcante/starlark-go-bazel/types"
 	"go.starlark.net/starlark"
+
+	"github.com/albertocavalcante/starlark-go-bazel/types"
 )
 
 // packageContextKey is the key used to store PackageContext in thread locals.

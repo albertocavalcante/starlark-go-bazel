@@ -13,10 +13,10 @@ import (
 // already parsed the source for unrelated reasons (load scanning,
 // AST walks) don't pay for a second parse inside ExecFile. This test
 // pins three contracts:
-//   1. The pre-parsed path produces the same globals as the
-//      source-bytes path.
-//   2. A simple repository_rule definition lands in globals.
-//   3. Passing nil for the parsed file errors cleanly.
+//  1. The pre-parsed path produces the same globals as the
+//     source-bytes path.
+//  2. A simple repository_rule definition lands in globals.
+//  3. Passing nil for the parsed file errors cleanly.
 func TestEvalBzlFromAST_MatchesEvalBzl(t *testing.T) {
 	src := []byte(`
 def _impl(ctx):

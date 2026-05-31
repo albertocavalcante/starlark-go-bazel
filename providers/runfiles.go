@@ -8,8 +8,9 @@ package providers
 import (
 	"fmt"
 
-	"github.com/albertocavalcante/starlark-go-bazel/types"
 	"go.starlark.net/starlark"
+
+	"github.com/albertocavalcante/starlark-go-bazel/types"
 )
 
 // Runfiles represents a container of information regarding a set of files
@@ -118,7 +119,7 @@ func (r *Runfiles) Hash() (uint32, error) {
 // Reference: RunfilesApi.java interface methods
 func (r *Runfiles) Attr(name string) (starlark.Value, error) {
 	switch name {
-	case "files":
+	case attrFiles:
 		// From RunfilesApi.java: getArtifactsForStarlark()
 		// "Returns the set of runfiles as files"
 		return r.files, nil
@@ -364,9 +365,7 @@ func (rb *RunfilesBuilder) AddFiles(files []*types.File) {
 
 // AddTransitiveFiles adds a depset of files.
 func (rb *RunfilesBuilder) AddTransitiveFiles(files *types.Depset) {
-	for _, v := range files.ToList() {
-		rb.files = append(rb.files, v)
-	}
+	rb.files = append(rb.files, files.ToList()...)
 }
 
 // AddSymlink adds a symlink.

@@ -3,9 +3,10 @@ package taint_test
 import (
 	"testing"
 
+	"go.starlark.net/starlark"
+
 	"github.com/albertocavalcante/starlark-go-bazel/stub"
 	"github.com/albertocavalcante/starlark-go-bazel/taint"
-	"go.starlark.net/starlark"
 )
 
 // External test package so we can import stub (for stub.Shared) to

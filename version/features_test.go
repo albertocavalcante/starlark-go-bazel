@@ -3,9 +3,10 @@ package version_test
 import (
 	"testing"
 
-	"github.com/albertocavalcante/starlark-go-bazel/version"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
+
+	"github.com/albertocavalcante/starlark-go-bazel/version"
 )
 
 // HasFeature returns the curated table answer per Version.
@@ -256,7 +257,7 @@ func TestFeaturesMatchUpstreamForV9_Skipped(t *testing.T) {
 // a Bazel engineer would expect. VLatest is an alias for V9 (today),
 // so `v >= V8` includes VLatest without needing a disjunction.
 func TestVersion_OrderingComparable(t *testing.T) {
-	if !(version.V7 < version.V8 && version.V8 < version.V9) {
+	if version.V7 >= version.V8 || version.V8 >= version.V9 {
 		t.Errorf("expected V7 < V8 < V9; got V7=%d V8=%d V9=%d",
 			int(version.V7), int(version.V8), int(version.V9))
 	}

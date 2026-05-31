@@ -8,8 +8,9 @@ package providers
 import (
 	"fmt"
 
-	"github.com/albertocavalcante/starlark-go-bazel/types"
 	"go.starlark.net/starlark"
+
+	"github.com/albertocavalcante/starlark-go-bazel/types"
 )
 
 // DefaultInfoProvider is the singleton provider type for DefaultInfo.
@@ -112,7 +113,7 @@ func (d *DefaultInfo) Hash() (uint32, error) {
 // Reference: DefaultInfoApi.java interface methods
 func (d *DefaultInfo) Attr(name string) (starlark.Value, error) {
 	switch name {
-	case "files":
+	case attrFiles:
 		// From DefaultInfoApi.java: getFiles()
 		// "A depset of File objects representing the default outputs to build"
 		if d.files == nil {
@@ -120,7 +121,7 @@ func (d *DefaultInfo) Attr(name string) (starlark.Value, error) {
 		}
 		return d.files, nil
 
-	case "runfiles":
+	case attrRunfiles:
 		// Legacy runfiles field
 		if d.runfiles == nil {
 			return starlark.None, nil
@@ -267,9 +268,9 @@ func DefaultInfoBuiltin(thread *starlark.Thread, b *starlark.Builtin, args starl
 	for _, kv := range kwargs {
 		key := string(kv[0].(starlark.String))
 		switch key {
-		case "files":
+		case attrFiles:
 			filesObj = kv[1]
-		case "runfiles":
+		case attrRunfiles:
 			runfilesObj = kv[1]
 		case "data_runfiles":
 			dataRunfilesObj = kv[1]

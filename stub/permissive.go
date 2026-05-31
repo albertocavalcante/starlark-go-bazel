@@ -29,9 +29,10 @@ package stub
 import (
 	"fmt"
 
-	"github.com/albertocavalcante/starlark-go-bazel/taint"
 	"go.starlark.net/starlark"
 	"go.starlark.net/syntax"
+
+	"github.com/albertocavalcante/starlark-go-bazel/taint"
 )
 
 // Permissive is the universal-stub Starlark value. Returned for

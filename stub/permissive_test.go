@@ -4,10 +4,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/albertocavalcante/starlark-go-bazel/stub"
-	"github.com/albertocavalcante/starlark-go-bazel/taint"
 	"go.starlark.net/starlark"
 	"go.starlark.net/syntax"
+
+	"github.com/albertocavalcante/starlark-go-bazel/stub"
+	"github.com/albertocavalcante/starlark-go-bazel/taint"
 )
 
 // Permissive satisfies the basic Starlark interface.
@@ -302,10 +303,10 @@ func TestPermissive_DetectedByFlattenURLs(t *testing.T) {
 // never panic. The function returns either a String (for PLUS+String
 // fast path) or Shared.
 func FuzzPermissive_Binary(f *testing.F) {
-	f.Add(int(syntax.PLUS), "foo", true)  // standard string concat
-	f.Add(int(syntax.STAR), "x", false)   // non-PLUS op
-	f.Add(int(syntax.MINUS), "", true)    // empty string
-	f.Add(int(syntax.PLUS), "", false)    // empty string PLUS
+	f.Add(int(syntax.PLUS), "foo", true) // standard string concat
+	f.Add(int(syntax.STAR), "x", false)  // non-PLUS op
+	f.Add(int(syntax.MINUS), "", true)   // empty string
+	f.Add(int(syntax.PLUS), "", false)   // empty string PLUS
 	f.Fuzz(func(t *testing.T, op int, s string, leftSide bool) {
 		var side starlark.Side
 		if leftSide {

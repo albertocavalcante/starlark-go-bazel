@@ -31,8 +31,8 @@ func glob(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwa
 	}
 
 	var include, exclude *starlark.List
-	var excludeDirs starlark.Int = starlark.MakeInt(1) // default: exclude directories
-	var allowEmpty starlark.Value = starlark.None      // unbound in Bazel
+	var excludeDirs = starlark.MakeInt(1)         // default: exclude directories
+	var allowEmpty starlark.Value = starlark.None // unbound in Bazel
 
 	if err := starlark.UnpackArgs("glob", args, kwargs,
 		"include?", &include,
@@ -126,7 +126,7 @@ func subpackages(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tup
 	}
 
 	var include, exclude *starlark.List
-	var allowEmpty bool = false // default: False (unlike glob)
+	var allowEmpty = false // default: False (unlike glob)
 
 	if err := starlark.UnpackArgs("subpackages", args, kwargs,
 		"include", &include,

@@ -9,8 +9,9 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/albertocavalcante/starlark-go-bazel/types"
 	"go.starlark.net/starlark"
+
+	"github.com/albertocavalcante/starlark-go-bazel/types"
 )
 
 // OutputGroupInfo constants from OutputGroupInfo.java
@@ -202,6 +203,10 @@ type outputGroupIterator struct {
 	index int
 }
 
+// Next implements starlark.Iterator; the pointer parameter is part
+// of the interface contract and cannot be changed.
+//
+//nolint:gocritic // ptrToRefParam: interface-required signature.
 func (it *outputGroupIterator) Next(p *starlark.Value) bool {
 	if it.index >= len(it.names) {
 		return false
@@ -355,7 +360,7 @@ func MergeOutputGroupInfo(providers []*OutputGroupInfo) (*OutputGroupInfo, error
 // IsHiddenOutputGroup returns true if the output group name starts with underscore.
 // Reference: OutputGroupInfo.java HIDDEN_OUTPUT_GROUP_PREFIX usage
 func IsHiddenOutputGroup(name string) bool {
-	return len(name) > 0 && name[0] == '_'
+	return name != "" && name[0] == '_'
 }
 
 // IsInternalOutputGroup returns true if the output group name ends with _INTERNAL_.
