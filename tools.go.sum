@@ -1,5 +1,5 @@
-github.com/albertocavalcante/starlark-go-bazel v0.0.0-20260206103153-64fe9133b752 h1:BGtK1F5MZ3cAdTeTzY9Sw8dnZXUAcLDcYZwGdlY4u+s=
-github.com/albertocavalcante/starlark-go-bazel v0.0.0-20260206103153-64fe9133b752/go.mod h1:Kv8rQxjYqpb+tNgyfgfAmAWeWit3pjzNiC0YxBsgbJU=
+github.com/albertocavalcante/starlark-go-bazel v0.0.0-20260531080433-c0bdbe5d1e22 h1:s7utRK9Lj1QijRTx2xyz+uI4hatFYuMPwtQbYa4ddmc=
+github.com/albertocavalcante/starlark-go-bazel v0.0.0-20260531080433-c0bdbe5d1e22/go.mod h1:Kv8rQxjYqpb+tNgyfgfAmAWeWit3pjzNiC0YxBsgbJU=
 github.com/bitfield/gotestdox v0.2.2 h1:x6RcPAbBbErKLnapz1QeAlf3ospg8efBsedU93CDsnE=
 github.com/bitfield/gotestdox v0.2.2/go.mod h1:D+gwtS0urjBrzguAkTM2wodsTQYFHdpx8eqRJ3N+9pY=
 github.com/dnephin/pflag v1.0.7 h1:oxONGlWxhmUct0YzKTgrpQv9AUA1wtPBn7zuSjJqptk=

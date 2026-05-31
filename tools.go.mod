@@ -5,7 +5,7 @@ go 1.25
 tool gotest.tools/gotestsum
 
 require (
-	github.com/albertocavalcante/starlark-go-bazel v0.0.0-20260206103153-64fe9133b752
+	github.com/albertocavalcante/starlark-go-bazel v0.0.0-20260531080433-c0bdbe5d1e22
 	go.starlark.net v0.0.0-20260102030733-3fee463870c9
 )
 
