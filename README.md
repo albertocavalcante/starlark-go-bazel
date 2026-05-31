@@ -146,6 +146,26 @@ WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((resu
 
 - [`go.starlark.net`](https://pkg.go.dev/go.starlark.net) — Base Starlark interpreter (pure Go, WASM-compatible)
 
+## Known limitations
+
+For analysis-mode (`bzl.Options.Mode = ModeAnalysis`, M5+):
+
+- **`Hash(Permissive)` aborts the fork.** `stub.Permissive` values
+  are intentionally unhashable so a `dict[Permissive]` lookup raises
+  rather than collapsing every Permissive into one collision bucket.
+  When this fires, the surrounding `(os, arch)` fork is recorded in
+  `eval.InvokeResult.ForkErrors`; other forks continue. See plan 01
+  §06 Q5 for the trade-off discussion (`docs/plans/01-bazel-builtins-emulation/06-risks-open-questions-and-milestones.md`).
+- **`Permissive.Truth()` is always True.** Ruleset code that branches
+  on `if not value:` will take the truthy branch even when the value
+  was loaded-but-unset. Plan 01 §06 calls this out as "adjust on
+  real-corpus evidence."
+- **`taint.Marker` is a printable substring sentinel** (`"<permissive>"`).
+  Detection is `strings.Contains(s, Marker)`. Pathological inputs
+  that legitimately contain the marker text trigger a false positive
+  (URLs are tainted when they aren't). Use `taint.Has(s)` as the
+  supported entry point rather than direct substring comparisons.
+
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.
