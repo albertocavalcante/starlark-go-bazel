@@ -11,10 +11,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/albertocavalcante/starlark-go-bazel/builtins"
 	"github.com/albertocavalcante/starlark-go-bazel/loader"
 	"github.com/albertocavalcante/starlark-go-bazel/types"
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
+	"go.starlark.net/syntax"
 )
 
 // Evaluator evaluates Starlark files (BUILD and .bzl).
@@ -24,6 +26,7 @@ type Evaluator struct {
 	predeclaredBzl   starlark.StringDict
 	predeclaredBuild starlark.StringDict
 	printHandler     func(msg string)
+	loadResolver     func(*starlark.Thread, string) (starlark.StringDict, error)
 	cache            map[string]*CachedModule
 }
 
@@ -40,6 +43,13 @@ type Options struct {
 	PredeclaredBzl   starlark.StringDict
 	PredeclaredBuild starlark.StringDict
 	PrintHandler     func(msg string)
+
+	// LoadResolver, when non-nil, REPLACES the default thread.Load
+	// handler for both .bzl and BUILD evaluation. Consumers wiring
+	// analysis-mode loaders (stub.LoaderFor + a tryReal hook into a
+	// local mirror) supply this. When nil, the existing BzlLoader /
+	// FileLoader chain handles loads.
+	LoadResolver func(*starlark.Thread, string) (starlark.StringDict, error)
 }
 
 // New creates a new Evaluator.
@@ -60,6 +70,7 @@ func New(opts Options) *Evaluator {
 		predeclaredBzl:   predeclaredBzl,
 		predeclaredBuild: predeclaredBuild,
 		printHandler:     opts.PrintHandler,
+		loadResolver:     opts.LoadResolver,
 		cache:            make(map[string]*CachedModule),
 	}
 }
@@ -89,10 +100,13 @@ func (e *Evaluator) EvalBzl(path string, source []byte) (*BzlResult, error) {
 		Print: e.makePrintHandler(),
 	}
 
-	if e.bzlLoader != nil {
+	switch {
+	case e.loadResolver != nil:
+		thread.Load = e.loadResolver
+	case e.bzlLoader != nil:
 		thread.Load = loader.MakeLoadFunc(e.bzlLoader)
 		loader.SetBzlLoader(thread, e.bzlLoader)
-	} else {
+	default:
 		thread.Load = e.makeLoadFunc()
 	}
 	loader.SetCurrentPackage(thread, pkg)
@@ -102,6 +116,54 @@ func (e *Evaluator) EvalBzl(path string, source []byte) (*BzlResult, error) {
 		return nil, fmt.Errorf("evaluating %s: %w", path, err)
 	}
 
+	return &BzlResult{Globals: globals}, nil
+}
+
+// EvalBzlFromAST evaluates a .bzl file from a pre-parsed *syntax.File.
+// Identical to EvalBzl in every respect except it skips the parse step,
+// which is the dominant cost for callers that already had to parse the
+// source for other reasons (load-symbol scanning before constructing a
+// LoadResolver, AST walks for indexing, etc.).
+//
+// The passed file is mutated during resolve (per
+// starlark.FileProgram's contract). Callers must not pass the same
+// file twice or share it across goroutines.
+func (e *Evaluator) EvalBzlFromAST(path string, parsed *syntax.File) (*BzlResult, error) {
+	if parsed == nil {
+		return nil, fmt.Errorf("evaluating %s: nil syntax.File", path)
+	}
+
+	dir := filepath.Dir(path)
+	pkg := strings.TrimPrefix(dir, "/")
+	if pkg == "." {
+		pkg = ""
+	}
+
+	thread := &starlark.Thread{
+		Name:  path,
+		Print: e.makePrintHandler(),
+	}
+
+	switch {
+	case e.loadResolver != nil:
+		thread.Load = e.loadResolver
+	case e.bzlLoader != nil:
+		thread.Load = loader.MakeLoadFunc(e.bzlLoader)
+		loader.SetBzlLoader(thread, e.bzlLoader)
+	default:
+		thread.Load = e.makeLoadFunc()
+	}
+	loader.SetCurrentPackage(thread, pkg)
+
+	prog, err := starlark.FileProgram(parsed, e.predeclaredBzl.Has)
+	if err != nil {
+		return nil, fmt.Errorf("evaluating %s: %w", path, err)
+	}
+	globals, err := prog.Init(thread, e.predeclaredBzl)
+	globals.Freeze()
+	if err != nil {
+		return nil, fmt.Errorf("evaluating %s: %w", path, err)
+	}
 	return &BzlResult{Globals: globals}, nil
 }
 
@@ -118,10 +180,13 @@ func (e *Evaluator) EvalBuild(path string, source []byte) (*BuildResult, error) 
 		Print: e.makePrintHandler(),
 	}
 
-	if e.bzlLoader != nil {
+	switch {
+	case e.loadResolver != nil:
+		thread.Load = e.loadResolver
+	case e.bzlLoader != nil:
 		thread.Load = loader.MakeLoadFunc(e.bzlLoader)
 		loader.SetBzlLoader(thread, e.bzlLoader)
-	} else {
+	default:
 		thread.Load = e.makeLoadFunc()
 	}
 	loader.SetCurrentPackage(thread, pkg)
@@ -204,12 +269,15 @@ func (e *Evaluator) makeLoadFunc() func(thread *starlark.Thread, module string) 
 
 func makeBzlPredeclared() starlark.StringDict {
 	return starlark.StringDict{
-		"Label":    starlark.NewBuiltin("Label", types.LabelBuiltin),
-		"provider": starlark.NewBuiltin("provider", providerBuiltin),
-		"struct":   starlark.NewBuiltin("struct", starlarkstruct.Make),
-		"depset":   starlark.NewBuiltin("depset", types.DepsetBuiltin),
-		"rule":     starlark.NewBuiltin("rule", types.RuleBuiltin),
-		"attr":     newAttrModule(),
+		"Label":            starlark.NewBuiltin("Label", types.LabelBuiltin),
+		"provider":         starlark.NewBuiltin("provider", providerBuiltin),
+		"struct":           starlark.NewBuiltin("struct", starlarkstruct.Make),
+		"depset":           starlark.NewBuiltin("depset", types.DepsetBuiltin),
+		"rule":             starlark.NewBuiltin("rule", types.RuleBuiltin),
+		"repository_rule":  starlark.NewBuiltin("repository_rule", builtins.RepositoryRule),
+		"module_extension": starlark.NewBuiltin("module_extension", builtins.ModuleExtension),
+		"tag_class":        starlark.NewBuiltin("tag_class", builtins.TagClass),
+		"attr":             newAttrModule(),
 		// .bzl files routinely reference `native.*` inside helper /
 		// macro function bodies (native.package_name, native.glob,
 		// native.existing_rule, etc.) even though those calls are
@@ -323,27 +391,36 @@ func (m *attrModule) Attr(name string) (starlark.Value, error) {
 		return starlark.NewBuiltin("attr.string", attrFactory(types.AttrTypeString)), nil
 	case "string_list":
 		return starlark.NewBuiltin("attr.string_list", attrFactory(types.AttrTypeStringList)), nil
+	case "string_dict":
+		return starlark.NewBuiltin("attr.string_dict", attrFactory(types.AttrTypeStringDict)), nil
+	case "string_list_dict":
+		return starlark.NewBuiltin("attr.string_list_dict", attrFactory(types.AttrTypeStringDict)), nil
 	case "int":
 		return starlark.NewBuiltin("attr.int", attrFactory(types.AttrTypeInt)), nil
+	case "int_list":
+		return starlark.NewBuiltin("attr.int_list", attrFactory(types.AttrTypeInt)), nil
 	case "bool":
 		return starlark.NewBuiltin("attr.bool", attrFactory(types.AttrTypeBool)), nil
 	case "label":
 		return starlark.NewBuiltin("attr.label", attrFactory(types.AttrTypeLabel)), nil
 	case "label_list":
 		return starlark.NewBuiltin("attr.label_list", attrFactory(types.AttrTypeLabelList)), nil
+	case "label_keyed_string_dict":
+		return starlark.NewBuiltin("attr.label_keyed_string_dict", attrFactory(types.AttrTypeLabel)), nil
 	case "output":
 		return starlark.NewBuiltin("attr.output", attrFactory(types.AttrTypeOutput)), nil
 	case "output_list":
 		return starlark.NewBuiltin("attr.output_list", attrFactory(types.AttrTypeOutputList)), nil
-	case "string_dict":
-		return starlark.NewBuiltin("attr.string_dict", attrFactory(types.AttrTypeStringDict)), nil
 	default:
 		return nil, starlark.NoSuchAttrError(fmt.Sprintf("attr has no attribute %q", name))
 	}
 }
 
 func (m *attrModule) AttrNames() []string {
-	return []string{"bool", "int", "label", "label_list", "output", "output_list", "string", "string_dict", "string_list"}
+	return []string{
+		"bool", "int", "int_list", "label", "label_keyed_string_dict", "label_list",
+		"output", "output_list", "string", "string_dict", "string_list", "string_list_dict",
+	}
 }
 
 func attrFactory(attrType types.AttrType) func(*starlark.Thread, *starlark.Builtin, starlark.Tuple, []starlark.Tuple) (starlark.Value, error) {
